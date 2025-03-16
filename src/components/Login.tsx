@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.svg';
+import Logo from './Logo';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -53,8 +53,8 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
       <div className="bg-white p-8 rounded-xl shadow-2xl w-96 transform transition-all duration-300 hover:shadow-3xl">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-32 h-32 mb-4 rounded-full overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
-            <img src={logo} alt="Master Chef Logo" className="w-full h-full object-cover" />
+          <div className="w-32 h-32 mb-4">
+            <Logo className="w-full h-full" />
           </div>
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">Login</h2>
           <div className="w-16 h-1 bg-red-500 rounded-full"></div>
