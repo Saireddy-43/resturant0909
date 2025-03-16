@@ -32,14 +32,14 @@ export const menuData = [
         name: "Garlic Naan",
         description: "Soft bread topped with garlic and butter, baked in a tandoor.",
         price: 79,
-        image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80"
+        image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80"
       },
       {
         id: "mon-5",
         name: "Gulab Jamun",
         description: "Deep-fried milk solids soaked in sugar syrup, served warm.",
         price: 129,
-        image: "https://images.unsplash.com/photo-1590145366551-c75ca1655e6d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80"
+        image: "https://images.unsplash.com/photo-1615832494873-b3ccb4c5e2a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80"
       },
       {
         id: "mon-6",
@@ -88,7 +88,7 @@ export const menuData = [
         name: "Rasmalai",
         description: "Soft cottage cheese patties in sweetened, cardamom-flavored milk.",
         price: 149,
-        image: "https://images.unsplash.com/photo-1582716401301-b2407dc7563d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80"
+        image: "https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80"
       }
     ]
   },
