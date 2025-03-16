@@ -1,6 +1,35 @@
 import { useState, useEffect } from 'react';
 import { menuData } from './data/menuData';
 import { Menu, ChevronLeft, ChevronRight, ShoppingCart, X, Calendar, CreditCard, QrCode, User, LogOut } from 'lucide-react';
+import TableLayout from './components/TableLayout';
+
+// API endpoints
+const API_BASE_URL = 'http://localhost:3000/api';
+
+// API functions
+const createBooking = async (bookingData: any) => {
+  const response = await fetch(`${API_BASE_URL}/bookings`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(bookingData)
+  });
+  if (!response.ok) throw new Error('Failed to create booking');
+  return response.json();
+};
+
+const createOrder = async (orderData: any) => {
+  const response = await fetch(`${API_BASE_URL}/orders`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(orderData)
+  });
+  if (!response.ok) throw new Error('Failed to create order');
+  return response.json();
+};
 
 interface MenuItem {
   id: string;
@@ -82,6 +111,7 @@ function App() {
     address: ''
   });
   const [showProfile, setShowProfile] = useState(false);
+  const [selectedTables, setSelectedTables] = useState<string[]>([]);
 
   const selectedMenu = menuData.find((menu: MenuDay) => menu.day === selectedDay);
 
@@ -139,37 +169,97 @@ function App() {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
-  const handleBookTable = (e: React.FormEvent) => {
-    e.preventDefault();
-    setShowBooking(false);
-    showNotification('Table booked successfully! We will contact you shortly.', 'success');
-    setBookingDetails({ date: '', time: '', guests: '2', name: '', phone: '' });
-  };
-
-  const showNotification = (message: string, type: 'success' | 'error') => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
-  };
-
-  const handlePayment = (e: React.FormEvent) => {
-    e.preventDefault();
-    setShowPayment(false);
-    setShowConfirmation(true);
-    // Reset cart and payment details
-    setCart([]);
-    setPaymentDetails({
-      method: 'card',
-      cardNumber: '',
-      cardExpiry: '',
-      cardCvv: '',
-      upiId: ''
+  const handleTableSelect = (tableNumber: string) => {
+    setSelectedTables(prev => {
+      if (prev.includes(tableNumber)) {
+        return prev.filter(t => t !== tableNumber);
+      }
+      return [...prev, tableNumber];
     });
-    setTimeout(() => setShowConfirmation(false), 5000); // Hide confirmation after 5 seconds
+  };
+
+  const handleBookTable = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const bookingData = {
+      name: bookingDetails.name,
+      date: bookingDetails.date,
+      time: bookingDetails.time,
+      guests: parseInt(bookingDetails.guests),
+      phone: bookingDetails.phone,
+      tableNumbers: selectedTables,
+    };
+
+    try {
+      await createBooking(bookingData);
+
+      // Update booked tables in localStorage
+      const bookedTables = JSON.parse(localStorage.getItem('bookedTables') || '{}');
+      selectedTables.forEach(table => {
+        bookedTables[table] = {
+          isBooked: true,
+          date: bookingDetails.date,
+          time: bookingDetails.time
+        };
+      });
+      localStorage.setItem('bookedTables', JSON.stringify(bookedTables));
+
+      setShowBooking(false);
+      showNotification('Table booked successfully! We will contact you shortly.', 'success');
+      
+      // Reset form
+      setBookingDetails({ date: '', time: '', guests: '2', name: '', phone: '' });
+      setSelectedTables([]);
+    } catch (error) {
+      showNotification('Failed to book table. Please try again.', 'error');
+    }
+  };
+
+  const handlePayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const orderData = {
+      customerName: userDetails.name,
+      items: cart.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price
+      })),
+      total: getTotalPrice(),
+      customerDetails: {
+        email: userDetails.email,
+        phone: userDetails.phone,
+        address: userDetails.address
+      }
+    };
+
+    try {
+      await createOrder(orderData);
+      setShowPayment(false);
+      setShowConfirmation(true);
+      // Reset cart and payment details
+      setCart([]);
+      setPaymentDetails({
+        method: 'card',
+        cardNumber: '',
+        cardExpiry: '',
+        cardCvv: '',
+        upiId: ''
+      });
+      setTimeout(() => setShowConfirmation(false), 5000);
+    } catch (error) {
+      showNotification('Failed to process payment. Please try again.', 'error');
+    }
   };
 
   const handleCheckout = () => {
     setShowCart(false);
     setShowPayment(true);
+  };
+
+  const showNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -663,73 +753,107 @@ function App() {
       {/* Table Booking Modal */}
       {showBooking && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">Book a Table</h2>
               <button onClick={() => setShowBooking(false)} className="text-gray-500 hover:text-gray-700">
                 <X className="h-6 w-6" />
               </button>
             </div>
-            <form onSubmit={handleBookTable} className="space-y-4">
-              <div>
-                <label className="block text-gray-700 mb-2">Date</label>
-                <input
-                  type="date"
-                  required
-                  value={bookingDetails.date}
-                  onChange={(e) => setBookingDetails({ ...bookingDetails, date: e.target.value })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 mb-2">Time</label>
-                <input
-                  type="time"
-                  required
-                  value={bookingDetails.time}
-                  onChange={(e) => setBookingDetails({ ...bookingDetails, time: e.target.value })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 mb-2">Number of Guests</label>
-                <select
-                  value={bookingDetails.guests}
-                  onChange={(e) => setBookingDetails({ ...bookingDetails, guests: e.target.value })}
-                  className="w-full p-2 border rounded"
-                >
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-                    <option key={num} value={num}>{num} {num === 1 ? 'person' : 'people'}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-gray-700 mb-2">Name</label>
-                <input
-                  type="text"
-                  required
-                  value={bookingDetails.name}
-                  onChange={(e) => setBookingDetails({ ...bookingDetails, name: e.target.value })}
-                  className="w-full p-2 border rounded"
-                  placeholder="Your name"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 mb-2">Phone</label>
-                <input
-                  type="tel"
-                  required
-                  value={bookingDetails.phone}
-                  onChange={(e) => setBookingDetails({ ...bookingDetails, phone: e.target.value })}
-                  className="w-full p-2 border rounded"
-                  placeholder="Your phone number"
-                />
+            <form onSubmit={handleBookTable} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-gray-700 mb-2">Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={bookingDetails.date}
+                      onChange={(e) => setBookingDetails({ ...bookingDetails, date: e.target.value })}
+                      className="w-full p-2 border rounded"
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-2">Time</label>
+                    <select
+                      required
+                      value={bookingDetails.time}
+                      onChange={(e) => setBookingDetails({ ...bookingDetails, time: e.target.value })}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="">Select time</option>
+                      <option value="11:00">11:00 AM</option>
+                      <option value="12:00">12:00 PM</option>
+                      <option value="13:00">1:00 PM</option>
+                      <option value="14:00">2:00 PM</option>
+                      <option value="18:00">6:00 PM</option>
+                      <option value="19:00">7:00 PM</option>
+                      <option value="20:00">8:00 PM</option>
+                      <option value="21:00">9:00 PM</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-2">Number of Guests</label>
+                    <select
+                      value={bookingDetails.guests}
+                      onChange={(e) => setBookingDetails({ ...bookingDetails, guests: e.target.value })}
+                      className="w-full p-2 border rounded"
+                    >
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+                        <option key={num} value={num}>{num} {num === 1 ? 'person' : 'people'}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-2">Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={bookingDetails.name}
+                      onChange={(e) => setBookingDetails({ ...bookingDetails, name: e.target.value })}
+                      className="w-full p-2 border rounded"
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-2">Phone</label>
+                    <input
+                      type="tel"
+                      required
+                      value={bookingDetails.phone}
+                      onChange={(e) => setBookingDetails({ ...bookingDetails, phone: e.target.value })}
+                      className="w-full p-2 border rounded"
+                      placeholder="Your phone number"
+                    />
+                  </div>
+                </div>
+                <div>
+                  {bookingDetails.date && bookingDetails.time && (
+                    <TableLayout
+                      selectedTables={selectedTables}
+                      onTableSelect={handleTableSelect}
+                      date={bookingDetails.date}
+                      time={bookingDetails.time}
+                    />
+                  )}
+                  {!bookingDetails.date || !bookingDetails.time ? (
+                    <div className="p-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-500">
+                      Please select a date and time to view available tables
+                    </div>
+                  ) : null}
+                </div>
               </div>
               <button
                 type="submit"
-                className="w-full py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                disabled={!selectedTables.length}
+                className={`w-full py-3 rounded-md transition-colors ${
+                  selectedTables.length
+                    ? 'bg-red-600 text-white hover:bg-red-700'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
               >
-                Book Now
+                {selectedTables.length ? 'Book Selected Tables' : 'Please Select Tables'}
               </button>
             </form>
           </div>
