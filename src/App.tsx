@@ -64,9 +64,16 @@ function App() {
     upiId: ''
   });
   const [showLogin, setShowLogin] = useState(true);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [loginDetails, setLoginDetails] = useState({
     username: '',
     password: ''
+  });
+  const [signUpDetails, setSignUpDetails] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
   });
   const [userDetails, setUserDetails] = useState<UserDetails>({
     name: '',
@@ -185,6 +192,30 @@ function App() {
     }
   };
 
+  const handleSignUp = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simple validation
+    if (!signUpDetails.username || !signUpDetails.email || !signUpDetails.password || !signUpDetails.confirmPassword) {
+      showNotification('Please fill in all fields', 'error');
+      return;
+    }
+    if (signUpDetails.password !== signUpDetails.confirmPassword) {
+      showNotification('Passwords do not match', 'error');
+      return;
+    }
+    // In a real app, this would be an API call to create the user
+    const newUserDetails = {
+      name: signUpDetails.username,
+      email: signUpDetails.email,
+      phone: '',
+      address: ''
+    };
+    setUserDetails(newUserDetails);
+    localStorage.setItem('userDetails', JSON.stringify(newUserDetails));
+    setShowLogin(false);
+    showNotification('Account created successfully!', 'success');
+  };
+
   const handleLogout = () => {
     setShowLogin(true);
     setUserDetails({
@@ -224,68 +255,152 @@ function App() {
               <img src="https://i.imgur.com/8B6mXUg.png" alt="Logo" className="w-20 h-20" />
             </div>
             <h1 className="text-4xl font-extrabold text-gray-900 mb-2">Spice Symphony</h1>
-            <p className="text-lg text-gray-600">Welcome back!</p>
+            <p className="text-lg text-gray-600">{isSignUp ? 'Create Account' : 'Welcome back!'}</p>
             <p className="text-sm text-gray-500 mt-2">Experience the finest Indian cuisine</p>
           </div>
-          <form onSubmit={handleLogin} className="mt-8 space-y-6">
-            <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-red-400" />
+
+          {isSignUp ? (
+            <form onSubmit={handleSignUp} className="mt-8 space-y-6">
+              <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-red-400" />
+                    </div>
+                    <input
+                      type="text"
+                      required
+                      value={signUpDetails.username}
+                      onChange={(e) => setSignUpDetails({ ...signUpDetails, username: e.target.value })}
+                      className="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Choose a username"
+                    />
                   </div>
-                  <input
-                    type="text"
-                    required
-                    value={loginDetails.username}
-                    onChange={(e) => setLoginDetails({ ...loginDetails, username: e.target.value })}
-                    className="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter your username"
-                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="email"
+                      required
+                      value={signUpDetails.email}
+                      onChange={(e) => setSignUpDetails({ ...signUpDetails, email: e.target.value })}
+                      className="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="password"
+                      required
+                      value={signUpDetails.password}
+                      onChange={(e) => setSignUpDetails({ ...signUpDetails, password: e.target.value })}
+                      className="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Create a password"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="password"
+                      required
+                      value={signUpDetails.confirmPassword}
+                      onChange={(e) => setSignUpDetails({ ...signUpDetails, confirmPassword: e.target.value })}
+                      className="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Confirm your password"
+                    />
+                  </div>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                  </div>
-                  <input
-                    type="password"
-                    required
-                    value={loginDetails.password}
-                    onChange={(e) => setLoginDetails({ ...loginDetails, password: e.target.value })}
-                    className="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter your password"
-                  />
-                </div>
-              </div>
-            </div>
-            <div>
               <button
                 type="submit"
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 transform hover:scale-[1.02]"
               >
-                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  <svg className="h-5 w-5 text-red-200 group-hover:text-red-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                  </svg>
-                </span>
+                Create Account
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleLogin} className="mt-8 space-y-6">
+              <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-red-400" />
+                    </div>
+                    <input
+                      type="text"
+                      required
+                      value={loginDetails.username}
+                      onChange={(e) => setLoginDetails({ ...loginDetails, username: e.target.value })}
+                      className="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Enter your username"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="password"
+                      required
+                      value={loginDetails.password}
+                      onChange={(e) => setLoginDetails({ ...loginDetails, password: e.target.value })}
+                      className="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Enter your password"
+                    />
+                  </div>
+                </div>
+              </div>
+              <button
+                type="submit"
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 transform hover:scale-[1.02]"
+              >
                 Sign In
               </button>
-            </div>
-          </form>
+            </form>
+          )}
+
           <div className="text-center mt-6 space-y-4">
+            <button
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-red-600 hover:text-red-700 text-sm font-medium transition-colors"
+            >
+              {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+            </button>
             <div className="flex items-center justify-center space-x-2">
               <span className="h-px w-16 bg-gray-200"></span>
-              <p className="text-sm text-gray-400">Secure Login</p>
+              <p className="text-sm text-gray-400">Secure {isSignUp ? 'Sign Up' : 'Login'}</p>
               <span className="h-px w-16 bg-gray-200"></span>
             </div>
             <p className="text-sm text-gray-500">
-              By signing in, you agree to our{' '}
+              By {isSignUp ? 'signing up' : 'signing in'}, you agree to our{' '}
               <a href="#" className="text-red-600 hover:text-red-700">Terms of Service</a>
               {' '}and{' '}
               <a href="#" className="text-red-600 hover:text-red-700">Privacy Policy</a>
