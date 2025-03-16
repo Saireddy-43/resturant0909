@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { menuData } from './data/menuData';
 import { Menu, ChevronLeft, ChevronRight, ShoppingCart, X, Calendar, CreditCard, QrCode, User, LogOut } from 'lucide-react';
 
-const LOGO_URL = "https://i.ibb.co/Qr0gM0M/restaurant-logo.jpg";
-
 interface MenuItem {
   id: string;
   name: string;
@@ -248,6 +246,25 @@ function App() {
     return day.toLowerCase() === 'monday';
   };
 
+  // Add this CSS class for the text logo animation
+  const logoStyle = {
+    fontFamily: "'Playfair Display', serif",
+    position: 'relative' as const,
+    display: 'inline-block',
+    padding: '0.5rem',
+    background: 'linear-gradient(45deg, #ef4444, #dc2626)',
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+    color: 'transparent',
+    textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+  };
+
+  const logoIconStyle = {
+    color: '#dc2626',
+    fontSize: '1.5em',
+    marginRight: '0.2em',
+  };
+
   if (showLogin) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 via-red-100 to-red-200 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -260,11 +277,16 @@ function App() {
         
         <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md space-y-8 relative z-10 border border-red-100">
           <div className="text-center">
-            <div className="flex justify-center mb-4">
-              <img src={LOGO_URL} alt="Restaurant Logo" className="w-24 h-24 animate-float" />
+            <div className="flex justify-center items-center mb-4">
+              <div className="text-center">
+                <div className="text-5xl font-bold mb-2" style={logoStyle}>
+                  <span style={logoIconStyle}>🔥</span>
+                  Spice
+                </div>
+                <div className="text-4xl font-semibold" style={logoStyle}>Symphony</div>
+              </div>
             </div>
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-2">Spice Symphony</h1>
-            <p className="text-lg text-gray-600">{isSignUp ? 'Create Account' : 'Welcome back!'}</p>
+            <p className="text-lg text-gray-600 mt-4">{isSignUp ? 'Create Account' : 'Welcome back!'}</p>
             <p className="text-sm text-gray-500 mt-2">Experience the finest Indian cuisine</p>
           </div>
 
@@ -428,10 +450,12 @@ function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
               <div className="flex items-center">
-                <img src={LOGO_URL} alt="Restaurant Logo" className="h-12 w-12 mr-3" />
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
-                  Spice Symphony
-                </h1>
+                <div className="flex items-center">
+                  <div className="text-2xl font-bold" style={logoStyle}>
+                    <span style={logoIconStyle}>🔥</span>
+                    Spice Symphony
+                  </div>
+                </div>
               </div>
               <nav className="hidden md:flex space-x-4">
                 {menuData.map((menu: MenuDay) => (
