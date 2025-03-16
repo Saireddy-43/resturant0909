@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -19,10 +17,10 @@ const Register = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError(''); // Clear error when user starts typing
+    setError('');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -45,28 +43,28 @@ const Register = () => {
       return;
     }
 
+    // Store user data in localStorage
     try {
-      const response = await fetch(`${API_URL}/api/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      
+      // Check if user already exists
+      if (users.some((user: { email: string }) => user.email === formData.email)) {
+        setError('User already exists');
+        setLoading(false);
+        return;
+      }
+
+      // Add new user
+      users.push({
+        email: formData.email,
+        password: formData.password // In a real app, never store passwords in plain text
       });
 
-      const data = await response.json();
+      localStorage.setItem('users', JSON.stringify(users));
+      localStorage.setItem('currentUser', formData.email);
 
-      if (response.ok) {
-        // Registration successful
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('userEmail', formData.email);
-        navigate('/');
-      } else {
-        setError(data.message || 'Registration failed');
-      }
+      // Redirect to home page
+      navigate('/');
     } catch (err) {
       setError('Registration failed. Please try again.');
     } finally {

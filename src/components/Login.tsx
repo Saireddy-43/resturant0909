@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -18,10 +16,10 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError(''); // Clear error when user starts typing
+    setError('');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -33,25 +31,16 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find((u: { email: string; password: string }) => 
+        u.email === formData.email && u.password === formData.password
+      );
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Login successful
-        localStorage.setItem('token', data.token);
-        // Store user email
-        localStorage.setItem('userEmail', formData.email);
-        // Redirect to home page
+      if (user) {
+        localStorage.setItem('currentUser', formData.email);
         navigate('/');
       } else {
-        setError(data.message || 'Invalid email or password');
+        setError('Invalid email or password');
       }
     } catch (err) {
       setError('Login failed. Please try again.');
