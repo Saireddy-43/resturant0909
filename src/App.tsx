@@ -210,9 +210,8 @@ function App() {
       phone: '',
       address: ''
     };
-    setUserDetails(newUserDetails);
-    localStorage.setItem('userDetails', JSON.stringify(newUserDetails));
-    setShowLogin(false);
+    // Don't set user details or remove showLogin here
+    // Just reset the form and switch to login view
     setIsSignUp(false);
     setSignUpDetails({
       username: '',
