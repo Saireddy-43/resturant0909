@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { menuData } from './data/menuData';
 import { Menu, ChevronLeft, ChevronRight, ShoppingCart, X, Calendar, CreditCard, QrCode, User, LogOut } from 'lucide-react';
 
-const LOGO_URL = "https://i.imgur.com/8B6mXUg.png";
+const LOGO_URL = "https://i.ibb.co/Qr0gM0M/restaurant-logo.jpg";
 
 interface MenuItem {
   id: string;
