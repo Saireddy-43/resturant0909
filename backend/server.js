@@ -30,6 +30,15 @@ app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // For demo purposes, let's create a test user if none exists
+    if (users.length === 0) {
+      const hashedPassword = await bcrypt.hash('test123', 10);
+      users.push({
+        email: 'test@example.com',
+        password: hashedPassword
+      });
+    }
+
     // Find user
     const user = users.find(u => u.email === email);
     if (!user) {
@@ -61,11 +70,6 @@ app.post('/api/register', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate input
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Please provide email and password' });
-    }
-
     // Check if user already exists
     if (users.find(u => u.email === email)) {
       return res.status(400).json({ message: 'User already exists' });
@@ -87,7 +91,6 @@ app.post('/api/register', async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    // Return success with token
     res.status(201).json({ token });
   } catch (error) {
     console.error('Registration error:', error);

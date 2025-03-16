@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     confirmPassword: '',
-    otp: '',
   });
-  const [step, setStep] = useState(1);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -21,77 +22,55 @@ const Register = () => {
     setError(''); // Clear error when user starts typing
   };
 
-  const sendOTP = async () => {
-    try {
-      const response = await fetch('/api/send-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: formData.email }),
-      });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-      if (response.ok) {
-        setStep(2);
-        setError('');
-      } else {
-        const data = await response.json();
-        setError(data.message || 'Failed to send OTP');
-      }
-    } catch (err) {
-      setError('Failed to send OTP. Please try again.');
+    if (!formData.email || !formData.password || !formData.confirmPassword) {
+      setError('Please fill in all fields');
+      setLoading(false);
+      return;
     }
-  };
 
-  const verifyOTP = async () => {
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch('/api/verify-otp', {
+      const response = await fetch(`${API_URL}/api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: formData.email,
-          otp: formData.otp,
           password: formData.password,
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        navigate('/login');
+        // Registration successful
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userEmail', formData.email);
+        navigate('/');
       } else {
-        const data = await response.json();
-        setError(data.message || 'Invalid OTP');
+        setError(data.message || 'Registration failed');
       }
     } catch (err) {
-      setError('Failed to verify OTP. Please try again.');
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    if (step === 1) {
-      if (!formData.email) {
-        setError('Please enter your email');
-        return;
-      }
-      if (formData.password !== formData.confirmPassword) {
-        setError('Passwords do not match');
-        return;
-      }
-      if (formData.password.length < 6) {
-        setError('Password must be at least 6 characters long');
-        return;
-      }
-      await sendOTP();
-    } else {
-      if (!formData.otp) {
-        setError('Please enter OTP');
-        return;
-      }
-      await verifyOTP();
+      setError('Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,7 +84,7 @@ const Register = () => {
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">Register</h2>
           <div className="w-16 h-1 bg-red-500 rounded-full"></div>
         </div>
-        
+
         {error && (
           <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-md transition-all duration-300 animate-fadeIn">
             <div className="flex items-center">
@@ -122,65 +101,51 @@ const Register = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {step === 1 ? (
-            <>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-300 outline-none"
-                  required
-                  placeholder="Enter your email"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-300 outline-none"
-                  required
-                  placeholder="Enter your password"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-300 outline-none"
-                  required
-                  placeholder="Confirm your password"
-                />
-              </div>
-            </>
-          ) : (
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Enter OTP</label>
-              <input
-                type="text"
-                name="otp"
-                value={formData.otp}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-300 outline-none"
-                required
-                placeholder="Enter the OTP sent to your email"
-              />
-            </div>
-          )}
-          
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-300 outline-none"
+              required
+              placeholder="Enter your email"
+              disabled={loading}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-300 outline-none"
+              required
+              placeholder="Enter your password"
+              disabled={loading}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-300 outline-none"
+              required
+              placeholder="Confirm your password"
+              disabled={loading}
+            />
+          </div>
           <button
             type="submit"
-            className="w-full py-3 px-4 bg-red-600 text-white rounded-lg font-semibold transform transition-all duration-300 hover:bg-red-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:scale-95"
+            className={`w-full py-3 px-4 bg-red-600 text-white rounded-lg font-semibold transform transition-all duration-300 hover:bg-red-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${loading ? 'opacity-75 cursor-not-allowed' : 'active:scale-95'}`}
+            disabled={loading}
           >
-            {step === 1 ? 'Send OTP' : 'Verify OTP'}
+            {loading ? 'Registering...' : 'Register'}
           </button>
         </form>
 
@@ -188,6 +153,7 @@ const Register = () => {
           <button
             onClick={() => navigate('/login')}
             className="text-sm text-gray-600 hover:text-red-600 transition-colors duration-300 flex items-center justify-center space-x-2 mx-auto"
+            disabled={loading}
           >
             <span>Already have an account?</span>
             <span className="font-semibold text-red-600 hover:text-red-700">Login</span>
