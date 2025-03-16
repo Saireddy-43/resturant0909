@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { menuData } from './data/menuData';
 import { Menu, ChevronLeft, ChevronRight, ShoppingCart, X, Calendar, CreditCard, QrCode, User, LogOut } from 'lucide-react';
+import logo from './assets/logo.svg';
 
 interface MenuItem {
   id: string;
@@ -213,7 +214,14 @@ function App() {
     setUserDetails(newUserDetails);
     localStorage.setItem('userDetails', JSON.stringify(newUserDetails));
     setShowLogin(false);
-    showNotification('Account created successfully!', 'success');
+    setIsSignUp(false);
+    setSignUpDetails({
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    });
+    showNotification('Account created successfully! Please sign in.', 'success');
   };
 
   const handleLogout = () => {
@@ -252,7 +260,7 @@ function App() {
         <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md space-y-8 relative z-10 border border-red-100">
           <div className="text-center">
             <div className="flex justify-center mb-4">
-              <img src="https://i.imgur.com/8B6mXUg.png" alt="Logo" className="w-20 h-20" />
+              <img src={logo} alt="Spice Symphony Logo" className="w-24 h-24 animate-float" />
             </div>
             <h1 className="text-4xl font-extrabold text-gray-900 mb-2">Spice Symphony</h1>
             <p className="text-lg text-gray-600">{isSignUp ? 'Create Account' : 'Welcome back!'}</p>
@@ -419,7 +427,7 @@ function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
               <div className="flex items-center">
-                <Menu className="h-8 w-8 text-red-600 mr-3" />
+                <img src={logo} alt="Spice Symphony Logo" className="h-12 w-12 mr-3" />
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
                   Spice Symphony
                 </h1>
