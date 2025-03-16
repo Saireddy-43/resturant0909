@@ -4,31 +4,39 @@ import { Menu, ChevronLeft, ChevronRight, ShoppingCart, X, Calendar, CreditCard,
 import TableLayout from './components/TableLayout';
 
 // API endpoints
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_URL = 'https://restaurant-api-sb1.onrender.com/api';
 
 // API functions
 const createBooking = async (bookingData: any) => {
-  const response = await fetch(`${API_BASE_URL}/bookings`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(bookingData)
-  });
-  if (!response.ok) throw new Error('Failed to create booking');
-  return response.json();
+  try {
+    const response = await fetch(`${API_URL}/bookings`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bookingData),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating booking:', error);
+    throw error;
+  }
 };
 
 const createOrder = async (orderData: any) => {
-  const response = await fetch(`${API_BASE_URL}/orders`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(orderData)
-  });
-  if (!response.ok) throw new Error('Failed to create order');
-  return response.json();
+  try {
+    const response = await fetch(`${API_URL}/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(orderData),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating order:', error);
+    throw error;
+  }
 };
 
 interface MenuItem {
