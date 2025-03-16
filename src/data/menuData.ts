@@ -203,7 +203,7 @@ export const menuData = [
         name: "Chicken Biryani",
         description: "Fragrant rice cooked with chicken, spices, and herbs.",
         price: 349,
-        image: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+        image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
       {
         id: "fri-2",
@@ -299,7 +299,7 @@ export const menuData = [
         name: "Mughlai Chicken Biryani",
         description: "Premium long-grain rice cooked with tender chicken, saffron, and royal spices.",
         price: 399,
-        image: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+        image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
       {
         id: "sun-2",
