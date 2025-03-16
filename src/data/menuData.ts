@@ -11,42 +11,42 @@ export const menuData = [
         name: "Butter Chicken",
         description: "Tender chicken cooked in a rich, creamy tomato sauce with butter and spices.",
         price: 349,
-        image: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+        image: "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
       {
         id: "mon-2",
         name: "Paneer Tikka Masala",
         description: "Grilled cottage cheese cubes in a spiced tomato gravy.",
         price: 299,
-        image: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+        image: "https://images.unsplash.com/photo-1551881192-002e02ad3d87?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
       {
         id: "mon-3",
         name: "Dal Makhani",
         description: "Black lentils and kidney beans slow-cooked with butter and cream.",
         price: 249,
-        image: "https://images.unsplash.com/photo-1546833998-877b37c2e5c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+        image: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
       {
         id: "mon-4",
         name: "Garlic Naan",
         description: "Soft bread topped with garlic and butter, baked in a tandoor.",
         price: 79,
-        image: "https://images.unsplash.com/photo-1596797038530-2c107aa8e1fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+        image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
       {
         id: "mon-5",
         name: "Gulab Jamun",
         description: "Deep-fried milk solids soaked in sugar syrup, served warm.",
         price: 129,
-        image: "https://images.unsplash.com/photo-1601303516534-bf0b1eb70866?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+        image: "https://images.unsplash.com/photo-1589119908995-c6f53f4b5598?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
       {
         id: "mon-6",
         name: "Masala Chai",
         description: "Traditional Indian spiced tea with milk.",
         price: 89,
-        image: "https://images.unsplash.com/photo-1571006581023-d51beda06f97?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+        image: "https://images.unsplash.com/photo-1561336313-0bd5e0b27ec8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       }
     ]
   },
