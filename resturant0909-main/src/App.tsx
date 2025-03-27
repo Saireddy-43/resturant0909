@@ -306,7 +306,11 @@ function App() {
         cardCvv: '',
         upiId: ''
       });
-      setTimeout(() => setShowConfirmation(false), 5000);
+      showNotification('Payment successful! Your order has been placed.', 'success');
+      setTimeout(() => {
+        setShowConfirmation(false);
+        showNotification('Thank you for your order! You can view it in your order history.', 'success');
+      }, 3000);
     } catch (error) {
       showNotification('Failed to process payment. Please try again.', 'error');
     }
@@ -1089,26 +1093,41 @@ function App() {
         </div>
       )}
 
-      {/* Order Confirmation Modal */}
+      {/* Payment Success Modal */}
       {showConfirmation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full text-center animate-scaleIn">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Order Confirmed!</h2>
-            <p className="text-gray-600 mb-6">
-              Your order has been successfully placed. We'll start preparing your delicious meal right away!
-            </p>
-            <div className="text-sm text-gray-500 space-y-2">
-              <p>Order will be delivered to:</p>
-              <p className="font-medium">{userDetails.name}</p>
-              <p>{userDetails.address || 'Please update your delivery address in profile'}</p>
-              <p>Phone: {userDetails.phone || 'Please update your phone in profile'}</p>
-              <p className="mt-4">A confirmation email will be sent to {userDetails.email}</p>
-              <p>Estimated delivery time: 30-45 minutes</p>
+          <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                <svg
+                  className="h-6 w-6 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <h3 className="mt-4 text-lg font-medium text-gray-900">Payment Successful!</h3>
+              <p className="mt-2 text-sm text-gray-500">
+                Your order has been placed successfully. You can view it in your order history.
+              </p>
+              <div className="mt-4">
+                <button
+                  onClick={() => {
+                    setShowConfirmation(false);
+                    setShowOrders(true);
+                  }}
+                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-500"
+                >
+                  View Order
+                </button>
+              </div>
             </div>
           </div>
         </div>
